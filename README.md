@@ -12,7 +12,7 @@ Multi-Jumps: If you land and another jump is available, you must keep jumping in
 Kings: Reach the back row to get "crowned." Kings can move and jump forward or backward.
 
 Winning: Capture all opponent pieces or block them so they have no legal moves.
-
+```text
       A   B   C   D   E   F   G   H
     +---+---+---+---+---+---+---+---+
   8 |   | r |   | r |   | r |   | r |
@@ -31,7 +31,7 @@ Winning: Capture all opponent pieces or block them so they have no legal moves.
     +---+---+---+---+---+---+---+---+
   1 | b |   | b |   | b |   | b |   |
     +---+---+---+---+---+---+---+---+
-
+```
 b: Black standard piece (moves diagonally forward only)
 
 r: Red standard piece (moves diagonally forward only)
