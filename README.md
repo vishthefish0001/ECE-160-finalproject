@@ -32,10 +32,10 @@ Winning: Capture all opponent pieces or block them so they have no legal moves.
   1 | b |   | b |   | b |   | b |   |
     +---+---+---+---+---+---+---+---+
 
-b: Black standard piece (moves forward only)
+b: Black standard piece (moves diagonally forward only)
 
-r: Red standard piece (moves forward only)
+r: Red standard piece (moves diagonally forward only)
 
-B: Black King (moves forward and backward)
+B: Black King (moves diagonally forward and diagonally backward)
 
-R: Red King (moves forward and backward)
+R: Red King (moves diagonally forward and diagonally backward)
