@@ -15,19 +15,27 @@ Winning: Capture all opponent pieces or block them so they have no legal moves.
 
       A   B   C   D   E   F   G   H
     +---+---+---+---+---+---+---+---+
-  8 |   | R |   | R |   | R |   | R |
+  8 |   | r |   | r |   | r |   | r |
     +---+---+---+---+---+---+---+---+
-  7 | R |   | R |   | R |   | R |   |
+  7 | r |   | r |   | r |   | r |   |
     +---+---+---+---+---+---+---+---+
-  6 |   | R |   | R |   | R |   | R |
+  6 |   | r |   | r |   | r |   | r |
     +---+---+---+---+---+---+---+---+
   5 |   |   |   |   |   |   |   |   |
     +---+---+---+---+---+---+---+---+
   4 |   |   |   |   |   |   |   |   |
     +---+---+---+---+---+---+---+---+
-  3 | B |   | B |   | B |   | B |   |
+  3 | b |   | b |   | b |   | b |   |
     +---+---+---+---+---+---+---+---+
-  2 |   | B |   | B |   | B |   | B |
+  2 |   | b |   | b |   | b |   | b |
     +---+---+---+---+---+---+---+---+
-  1 | B |   | B |   | B |   | B |   |
+  1 | b |   | b |   | b |   | b |   |
     +---+---+---+---+---+---+---+---+
+
+b: Black standard piece (moves forward only)
+
+r: Red standard piece (moves forward only)
+
+B: Black King (moves forward and backward)
+
+R: Red King (moves forward and backward)
