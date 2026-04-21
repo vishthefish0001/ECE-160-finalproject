@@ -1,60 +1,112 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "input.h"
+#include "input.h" // <ctype.h> removed
 
 static void flush_stdin(void) {
     int c;
-    while ((c = getchar()) != '\n' && c != EOF); // clears leftover newline so the next scanf doesnt read it as empty input
+    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 Move get_player_move(const GameState *state) {
     Move m;
-    int  from, to;
-    int  valid = 0;
-
+    int valid = 0;
     const char *name = (state->current_player == RED) ? "Red" : "Black";
 
-    while (!valid) {
-        printf("%s's turn. Enter move (e.g. 32 43): ", name);
+    int valid_pieces[64][2]; 
+    int num_pieces = 0;
 
-        if (scanf("%d %d", &from, &to) != 2) { // scanf returns how many items it read, if not 2 the format was wrong
-            if (feof(stdin)) {
-                printf("\nInput ended.\n");
-                exit(1);
+    // 1. Scan the board to find which pieces are allowed to move
+    int must_jump = must_player_jump(state, state->current_player);
+
+    for (int r = 0; r < BOARD_SIZE; r++) {
+        for (int c = 0; c < BOARD_SIZE; c++) {
+            if (state->board[r][c].color == state->current_player) {
+                if (must_jump) { 
+                    if (can_piece_jump(state, r, c)) {
+                        valid_pieces[num_pieces][0] = r;
+                        valid_pieces[num_pieces][1] = c;
+                        num_pieces++;
+                    }
+                } else { 
+                    if (can_piece_move(state, r, c)) {
+                        valid_pieces[num_pieces][0] = r;
+                        valid_pieces[num_pieces][1] = c;
+                        num_pieces++;
+                    }
+                }
             }
-            printf("  Error: invalid format. Use two numbers like '32 43'.\n");
+        }
+    }
+
+    if (num_pieces == 0) {
+        printf("%s has no legal moves! Game over.\n", name);
+        exit(0);
+    }
+
+    // 2. Display the menu and get input
+    while (!valid) {
+        printf("%s's turn. Available pieces to move:\n", name);
+        
+        for (int i = 0; i < num_pieces; i++) {
+            int pr = valid_pieces[i][0];
+            int pc = valid_pieces[i][1];
+            int is_king = state->board[pr][pc].is_king;
+
+            char col_letter = 'A' + pc;
+            int row_number = 8 - pr;
+
+            if (is_king) {
+                printf("  %d) King at %c%d\n", i + 1, col_letter, row_number);
+            } else {
+                printf("  %d) Piece at %c%d\n", i + 1, col_letter, row_number);
+            }
+        }
+
+        int choice;
+        printf("Enter the number of the piece to select: ");
+        if (scanf("%d", &choice) != 1 || choice < 1 || choice > num_pieces) {
+            if (feof(stdin)) exit(1);
+            printf("  Error: invalid choice.\n\n");
             flush_stdin();
             continue;
         }
         flush_stdin();
 
-        m.from_row = from / 10; // split 2-digit number into row and col, so "32" becomes row=3 col=2
-        m.from_col = from % 10;
-        m.to_row   = to   / 10;
-        m.to_col   = to   % 10;
-        m.jumped_row = -1;
-        m.jumped_col = -1;
+        m.from_row = valid_pieces[choice - 1][0];
+        m.from_col = valid_pieces[choice - 1][1];
 
-        if (m.from_row < 0 || m.from_row >= BOARD_SIZE ||
-            m.from_col < 0 || m.from_col >= BOARD_SIZE ||
-            m.to_row   < 0 || m.to_row   >= BOARD_SIZE ||
-            m.to_col   < 0 || m.to_col   >= BOARD_SIZE) {
-            printf("  Error: coordinates out of bounds (0-7 only).\n"); // check bounds before anything else
+        // 3. Ask for destination
+        char dest_col;
+        int dest_row;
+        printf("Enter destination (e.g., C4): ");
+        if (scanf(" %c%d", &dest_col, &dest_row) != 2) {
+            if (feof(stdin)) exit(1);
+            printf("  Error: invalid format.\n\n");
+            flush_stdin();
             continue;
         }
+        flush_stdin();
 
-        if (state->board[m.from_row][m.from_col].color != state->current_player) {
-            printf("  Error: that piece does not belong to you.\n"); // cant move the opponents piece
+        // Manual case conversion
+        if (dest_col >= 'a' && dest_col <= 'z') {
+            dest_col = dest_col - 'a' + 'A'; 
+        }
+
+        m.to_col = dest_col - 'A';
+        m.to_row = 8 - dest_row;
+
+        if (m.to_col < 0 || m.to_col >= BOARD_SIZE || m.to_row < 0 || m.to_row >= BOARD_SIZE) {
+            printf("  Error: coordinates out of bounds.\n\n");
             continue;
         }
 
         Move full = get_full_move(state, m);
-        if (full.jumped_row == -2) { // -2 means the move wasnt in the legal list, also catches mandatory jump violations
-            printf("  Error: illegal move. Remember — jumps are mandatory.\n");
+        if (full.jumped_row == -2) {
+            printf("  Error: illegal destination. Try again.\n\n");
             continue;
         }
 
-        m     = full; // replace partial move with full move so jumped coords are included
+        m = full;
         valid = 1;
     }
 

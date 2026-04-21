@@ -29,7 +29,7 @@ void init_board(GameState *state) {
         }
     }
 
-    state->red_count     = 12; // standard checkers starts with 12 pieces per side
+    state->red_count     = 12; 
     state->black_count   = 12;
     state->history_count = 0;
 }
@@ -37,31 +37,24 @@ void init_board(GameState *state) {
 void render_board(const GameState *state) {
     int r, c;
 
-    printf("\n    ");
-    for (c = 0; c < BOARD_SIZE; c++) {
-        printf("%d ", c); // column numbers across the top so players can read coordinates
-    }
-    printf("\n    ");
-    for (c = 0; c < BOARD_SIZE; c++) {
-        printf("--");
-    }
-    printf("\n");
+    printf("\n      A   B   C   D   E   F   G   H\n");
 
     for (r = 0; r < BOARD_SIZE; r++) {
-        printf("%d | ", r);
+        printf("    +---+---+---+---+---+---+---+---+\n");
+        printf("  %d |", 8 - r); // Rows go 8 down to 1
+
         for (c = 0; c < BOARD_SIZE; c++) {
             Piece p = state->board[r][c];
             if (p.color == EMPTY) {
-                printf("%c ", ((r + c) % 2 == 0) ? ' ' : '.'); // dots on dark squares so the diagonal pattern is visible
+                printf("   |");
             } else if (p.color == RED) {
-                printf("%c ", p.is_king ? 'R' : 'r'); // uppercase means king
+                printf(" %c |", p.is_king ? 'R' : 'r');
             } else {
-                printf("%c ", p.is_king ? 'B' : 'b');
+                printf(" %c |", p.is_king ? 'B' : 'b');
             }
         }
         printf("\n");
     }
-
-    printf("\n  Red: %d pieces   Black: %d pieces\n\n",
-           state->red_count, state->black_count); // piece counts so players can track captures
+    printf("    +---+---+---+---+---+---+---+---+\n");
+    printf("\n  Red: %d pieces   Black: %d pieces\n\n", state->red_count, state->black_count);
 }
