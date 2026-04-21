@@ -3,12 +3,12 @@
 #include "moves.h"
 
 int must_player_jump(const GameState *state, int player_color) {
-    // We will fill this in later when we add jump logic!
+    //fill this in later 
     return 0; 
 }
 
 int can_piece_jump(const GameState *state, int r, int c) {
-    // We will fill this in later when we add jump logic!
+    //fill this in later 
     return 0; 
 }
 
