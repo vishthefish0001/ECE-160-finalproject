@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "input.h" // <ctype.h> removed
+#include "input.h" 
 
 static void flush_stdin(void) {
     int c;
@@ -15,7 +15,7 @@ Move get_player_move(const GameState *state) {
     int valid_pieces[64][2]; 
     int num_pieces = 0;
 
-    // 1. Scan the board to find which pieces are allowed to move
+    // Scan the board to find which pieces are allowed to move
     int must_jump = must_player_jump(state, state->current_player);
 
     for (int r = 0; r < BOARD_SIZE; r++) {
@@ -43,7 +43,7 @@ Move get_player_move(const GameState *state) {
         exit(0);
     }
 
-    // 2. Display the menu and get input
+    // Display the menu and get input
     while (!valid) {
         printf("%s's turn. Available pieces to move:\n", name);
         
@@ -75,7 +75,7 @@ Move get_player_move(const GameState *state) {
         m.from_row = valid_pieces[choice - 1][0];
         m.from_col = valid_pieces[choice - 1][1];
 
-        // 3. Ask for destination
+        // Ask for destination
         char dest_col;
         int dest_row;
         printf("Enter destination (e.g., C4): ");
