@@ -10,10 +10,10 @@ static void flush_stdin(void) {
 
 static int read_destination(Move *m) {
     char dest_col;
-    char dest_row;
+    int dest_row;
 
     printf("Enter Destination, ex: C4");
-    if (scanf(" %c%d" &dest_col, &dest_row) !=2) {
+    if (scanf(" %c%d", &dest_col, &dest_row) !=2) {
         if(feof(stdin)) exit(1);
         flush_stdin();
         return 0;
