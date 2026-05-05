@@ -13,16 +13,20 @@ static int can_jump_dir(const GameState *state, int r, int c, int dr, int dc, in
     int land_c = c + 2 * dc;//its column
 
     // Bounds check on both middle and landing squares, is it invalid basically
-    if (mid_r < 0 || mid_r >= BOARD_SIZE || mid_c < 0 || mid_c >= BOARD_SIZE)
+    if (mid_r < 0 || mid_r >= BOARD_SIZE || mid_c < 0 || mid_c >= BOARD_SIZE){
         return 0;
-    if (land_r < 0 || land_r >= BOARD_SIZE || land_c < 0 || land_c >= BOARD_SIZE)
+    }
+    if (land_r < 0 || land_r >= BOARD_SIZE || land_c < 0 || land_c >= BOARD_SIZE){
         return 0;
+    }
 
     // In order to actually jump, though, the piece being jumped over HAS to be an opponent piece 
-    if (state->board[mid_r][mid_c].color != opponent)
+    if (state->board[mid_r][mid_c].color != opponent){
         return 0;
-    if (state->board[land_r][land_c].color != EMPTY) //landing sqaure HAS to be empty (availability)
+    }
+    if (state->board[land_r][land_c].color != EMPTY){ //landing sqaure HAS to be empty (availability)
         return 0;
+    }
 
     return 1;
 }
@@ -34,20 +38,30 @@ static int can_jump_dir(const GameState *state, int r, int c, int dr, int dc, in
  
 int can_piece_jump(const GameState *state, int r, int c) {
     Piece p = state->board[r][c];
-    if (p.color == EMPTY) return 0; //empty pieces cant jump
+    if (p.color == EMPTY){
+         return 0; //empty pieces cant jump
+    }
 
      
     int dir = (p.color == BLACK) ? -1 : 1; //forward direction for color
     int opponent = (p.color == BLACK) ? RED : BLACK; //what piece color the jump is happening over
 
     // Forward-left and forward-right jumps 
-    if (can_jump_dir(state, r, c, dir, -1, opponent)) return 1;
-    if (can_jump_dir(state, r, c, dir,  1, opponent)) return 1;
+    if (can_jump_dir(state, r, c, dir, -1, opponent)){
+         return 1;
+    }
+    if (can_jump_dir(state, r, c, dir,  1, opponent)){
+         return 1;
+    }
 
     // Kings can also jump backward diagonally 
     if (p.is_king) {
-        if (can_jump_dir(state, r, c, -dir, -1, opponent)) return 1;
-        if (can_jump_dir(state, r, c, -dir,  1, opponent)) return 1;
+        if (can_jump_dir(state, r, c, -dir, -1, opponent)){
+             return 1;
+        }
+        if (can_jump_dir(state, r, c, -dir,  1, opponent)){
+             return 1;
+        }
     }
 
     return 0; //only if no legal jumps are found
@@ -61,7 +75,9 @@ int must_player_jump(const GameState *state, int player_color) {
     for (int r = 0; r < BOARD_SIZE; r++) {
         for (int c = 0; c < BOARD_SIZE; c++) {
             if (state->board[r][c].color == player_color) {
-                if (can_piece_jump(state, r, c)) return 1; //if  jump is found, force it
+                if (can_piece_jump(state, r, c)){
+                     return 1; //if  jump is found, force it
+                }
             }
         }
     }
@@ -156,18 +172,22 @@ void apply_move(GameState *state, Move m) { //executes the valid move, changing 
         state->board[m.jumped_row][m.jumped_col].color  = EMPTY;
         state->board[m.jumped_row][m.jumped_col].is_king = 0;
 
-        if (p.color == BLACK)
+        if (p.color == BLACK){
             state->red_count--;
-        else
+        }
+        else{
             state->black_count--;
+        }
     }
 
     
      // Crowning: Black reaches row 0 (top of array = row 8 on screen),
      //Red reaches row 7 (bottom of array = row 1 on screen).
      
-    if (p.color == BLACK && m.to_row == 0)
+    if (p.color == BLACK && m.to_row == 0){
         state->board[m.to_row][m.to_col].is_king = 1;
-    if (p.color == RED && m.to_row == BOARD_SIZE - 1)
+    }
+    if (p.color == RED && m.to_row == BOARD_SIZE - 1){
         state->board[m.to_row][m.to_col].is_king = 1;
+    }
 }
