@@ -24,14 +24,16 @@ int main() {
 
         if (!has_jump) {
             // Check if any piece can take a simple step 
-            for (int r = 0; r < BOARD_SIZE && !has_move; r++)
-                for (int c = 0; c < BOARD_SIZE && !has_move; c++)
+            for (int r = 0; r < BOARD_SIZE && !has_move; r++){
+                for (int c = 0; c < BOARD_SIZE && !has_move; c++){
                     if (state.board[r][c].color == state.current_player){
                         if (can_piece_move(&state, r, c)){
                             has_move = 1;
                         }
                     }
                 }
+            }
+        }
         
 
         if (!has_jump && !has_move) {

@@ -5,7 +5,9 @@
 
 static void flush_stdin(void) {
     int c;
-    while ((c = getchar()) != '\n' && c != EOF);
+    while ((c = getchar()) != '\n' && c != EOF){
+        
+    }
 }
 
 static int read_destination(Move *m) {
@@ -14,7 +16,9 @@ static int read_destination(Move *m) {
 
     printf("Enter Destination, ex: C4");
     if (scanf(" %c%d", &dest_col, &dest_row) !=2) {
-        if(feof(stdin)) exit(1);
+        if(feof(stdin)){
+             exit(1);
+        }
         flush_stdin();
         return 0;
     }
@@ -40,7 +44,9 @@ static int build_piece_menu(const GameState *state, int valid_pieces[][2], int m
     int num = 0;
     for (int r = 0; r < BOARD_SIZE; r++) {
         for (int c = 0; c < BOARD_SIZE; c++) {
-            if (state->board[r][c].color != state->current_player) continue;
+            if (state->board[r][c].color != state->current_player){
+                 continue;
+            }
             int ok = must_jump ? can_piece_jump(state, r, c)
                                : can_piece_move(state, r, c);
             if (ok) {
@@ -77,7 +83,9 @@ Move get_player_move(const GameState *state) {
         int choice;
         printf("Select piece number: ");
         if (scanf("%d", &choice) != 1 || choice < 1 || choice > num_pieces) {
-            if (feof(stdin)) exit(1);
+            if (feof(stdin)){ 
+                exit(1);
+            }
             printf("  Error: invalid choice.\n\n");
             flush_stdin();
             continue;

@@ -60,9 +60,14 @@ void render_board(const GameState *state) { //prints the board after each move
                 int movable = 0;
                 if (p.color == state->current_player) {
                     if (must_jump) {
-                        if (can_piece_jump(state, r, c)) movable = 1; //jump piecesare selected
-                    } else {
-                        if (can_piece_move(state, r, c)) movable = 1; //movale pieces are selected
+                        if (can_piece_jump(state, r, c)){
+                             movable = 1; //jump piecesare selected
+                        }
+                    } 
+                    else {
+                        if (can_piece_move(state, r, c)){
+                             movable = 1; //movale pieces are selected
+                        }
                     }
                 }
 
