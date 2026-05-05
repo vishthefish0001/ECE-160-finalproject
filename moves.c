@@ -2,75 +2,70 @@
 #include <stdlib.h>
 #include "moves.h"
 
-/*
- * Helper: checks if direction (dr, dc) from (r, c) is a valid jump.
- * "opponent" is the color of the enemy piece that must occupy the middle square.
- * Returns 1 if the jump is legal, 0 otherwise.
- * A jump requires middle square (r+dr, c+dc) holds an opponent piece and landing square (r+2*dr, c+2*dc) is empty and in bounds
- */
-static int can_jump_dir(const GameState *state, int r, int c,
-                         int dr, int dc, int opponent) {
-    int mid_r = r + dr;
-    int mid_c = c + dc;
-    int land_r = r + 2 * dr;
-    int land_c = c + 2 * dc;
+//checks one diagonal direction for valid jumps
+//r,c are starting squares. dr,dc is the direction to check where they are either plus/minus 1
+//opponent is the color of the enemy (0 or 1)
+//static cause its only needed for moves.c
+static int can_jump_dir(const GameState *state, int r, int c, int dr, int dc, int opponent) {
+    int mid_r = r + dr; //piece being jumped over
+    int mid_c = c + dc; //its column
+    int land_r = r + 2 * dr;// landing square after jump
+    int land_c = c + 2 * dc;//its column
 
-    // Bounds check on both middle and landing squares 
+    // Bounds check on both middle and landing squares, is it invalid basically
     if (mid_r < 0 || mid_r >= BOARD_SIZE || mid_c < 0 || mid_c >= BOARD_SIZE)
         return 0;
     if (land_r < 0 || land_r >= BOARD_SIZE || land_c < 0 || land_c >= BOARD_SIZE)
         return 0;
 
-    // Middle must be an opponent piece, landing must be empty 
+    // In order to actually jump, though, the piece being jumped over HAS to be an opponent piece 
     if (state->board[mid_r][mid_c].color != opponent)
         return 0;
-    if (state->board[land_r][land_c].color != EMPTY)
+    if (state->board[land_r][land_c].color != EMPTY) //landing sqaure HAS to be empty (availability)
         return 0;
 
     return 1;
 }
 
-/*
- * Returns 1 if the piece at (r, c) has at least one legal jump available.
- * Regular pieces only jump forward; kings jump all four diagonals.
- *
- * Weakness: does NOT check for forced multi-jump chains after landing —
- * that is handled in main.c's game loop after apply_move().
- */
+
+ //Can_piece_jump checks if the piece at r,c had jumps available
+ //Regular pieces only jump forward diagonals, whereas kings jump all four diagonals.
+ //returns 1 when valid jump directions are found
+ 
 int can_piece_jump(const GameState *state, int r, int c) {
     Piece p = state->board[r][c];
-    if (p.color == EMPTY) return 0;
+    if (p.color == EMPTY) return 0; //empty pieces cant jump
 
-    // Black moves up (row decreases), Red moves down (row increases) 
-    int dir = (p.color == BLACK) ? -1 : 1;
-    int opponent = (p.color == BLACK) ? RED : BLACK;
+     
+    int dir = (p.color == BLACK) ? -1 : 1; //forward direction for color
+    int opponent = (p.color == BLACK) ? RED : BLACK; //what piece color the jump is happening over
 
     // Forward-left and forward-right jumps 
     if (can_jump_dir(state, r, c, dir, -1, opponent)) return 1;
     if (can_jump_dir(state, r, c, dir,  1, opponent)) return 1;
 
-    // Kings can also jump backward 
+    // Kings can also jump backward diagonally 
     if (p.is_king) {
         if (can_jump_dir(state, r, c, -dir, -1, opponent)) return 1;
         if (can_jump_dir(state, r, c, -dir,  1, opponent)) return 1;
     }
 
-    return 0;
+    return 0; //only if no legal jumps are found
 }
 
 
- //Returns 1 if ANY piece of player_color has a legal jump.
- // When this is true, that player MUST jump — they cannot make a simple move.
+ //players are forced to jump if there is one
+//must_player_jump scans the board and calls can_piece_jump for every piece of a player
  
 int must_player_jump(const GameState *state, int player_color) {
     for (int r = 0; r < BOARD_SIZE; r++) {
         for (int c = 0; c < BOARD_SIZE; c++) {
             if (state->board[r][c].color == player_color) {
-                if (can_piece_jump(state, r, c)) return 1;
+                if (can_piece_jump(state, r, c)) return 1; //if  jump is found, force it
             }
         }
     }
-    return 0;
+    return 0; //no jump available
 }
 
 
@@ -99,24 +94,17 @@ int can_piece_move(const GameState *state, int r, int c) {
     return 0;
 }
 
-/*
- * Validates the destination the player typed and fills in jumped_row/jumped_col.
- * Returns the Move with:
- *   jumped_row == -1  -> valid simple move (no capture)
- *   jumped_row >= 0   -> valid jump; jumped_row/col identify the captured piece
- *   jumped_row == -2  -> illegal move; caller should re-prompt
- *
- * DOES NOT verify that a jump was mandatory when one was available —
- * that enforcement happens in input.c before get_full_move is called.
- */
+//get full move makes sure the destination is valid and fills the jump ingo
+// so is a legal simple or jump move or is it illegal
+
 Move get_full_move(const GameState *state, Move m) {
     Piece p = state->board[m.from_row][m.from_col];
     int dir = (p.color == BLACK) ? -1 : 1;
     int opponent = (p.color == BLACK) ? RED : BLACK;
 
-    int row_diff = m.to_row - m.from_row;
-    int col_diff = m.to_col - m.from_col;  // signed; abs used for distance 
-    int abs_col  = (col_diff < 0) ? -col_diff : col_diff;
+    int row_diff = m.to_row - m.from_row; //negatives mean moving up, positives mean moving down
+    int col_diff = m.to_col - m.from_col;   // signed col diff
+    int abs_col  = (col_diff < 0) ? -col_diff : col_diff; //absolute col diff
 
     // Simple 1-step diagonal move 
     if (abs_col == 1 && state->board[m.to_row][m.to_col].color == EMPTY) {
@@ -130,18 +118,16 @@ Move get_full_move(const GameState *state, Move m) {
 
     //2 step diagonal jump
     if (abs_col == 2 && (row_diff == 2 || row_diff == -2)) {
-        // The middle square is halfway between from and to 
+        // The middle square is halfway between from and to coordinates
         int mid_r = (m.from_row + m.to_row) / 2;
         int mid_c = (m.from_col + m.to_col) / 2;
 
         //Direction of jump must be legal for this piece type 
-        int jump_dr = row_diff / 2;   // +1 or -1 
+        int jump_dr = row_diff / 2;   // +1 or -1 is direction of jump
         int valid_dir = (jump_dr == dir) || (p.is_king && jump_dr == -dir);
 
-        if (valid_dir &&
-            state->board[mid_r][mid_c].color == opponent &&
-            state->board[m.to_row][m.to_col].color == EMPTY) {
-
+        if (valid_dir && state->board[mid_r][mid_c].color == opponent && state->board[m.to_row][m.to_col].color == EMPTY) {
+     //opponent must be in the middle, and the landing has to be empty
             m.jumped_row = mid_r;
             m.jumped_col = mid_c;
             return m;
@@ -149,22 +135,14 @@ Move get_full_move(const GameState *state, Move m) {
     }
 
     // Neither a valid step nor a valid jump 
-    m.jumped_row = -2;
+    m.jumped_row = -2; //-2 is the signal that an illegal move has been done
     return m;
 }
 
-/*
- * Executes a validated move on the board:
- *    Moves the piece from source to destination
- *    If it was a jump, removes the captured piece and updates piece count
- *    Crowns the piece if it reached the back row
- *
- * multi-jump continuation is NOT handled here.
- * After apply_move returns, main.c checks if the landed piece can jump again.
- */
-void apply_move(GameState *state, Move m) {
+//
+void apply_move(GameState *state, Move m) { //executes the valid move, changing the board state
     // Pick up the piece 
-    Piece p = state->board[m.from_row][m.from_col];
+    Piece p = state->board[m.from_row][m.from_col]; //saves the place before clearing 
 
     // Clear the source square 
     state->board[m.from_row][m.from_col].color  = EMPTY;
