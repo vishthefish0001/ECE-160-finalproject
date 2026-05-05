@@ -4,7 +4,7 @@
 #include "moves.h" 
 
 
-
+//renders board after every move, checks for legal moves, 
 int main() {
     GameState state;
     init_board(&state);
