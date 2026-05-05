@@ -39,3 +39,7 @@ r: Red standard piece (moves diagonally forward only)
 B: Black King (moves diagonally forward and diagonally backward)
 
 R: Red King (moves diagonally forward and diagonally backward)
+
+Compilation steps:
+make
+./checkers.out
