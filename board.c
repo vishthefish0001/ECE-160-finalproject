@@ -8,11 +8,11 @@ void init_board(GameState *state) {
     for (r = 0; r < BOARD_SIZE; r++) {
         for (c = 0; c < BOARD_SIZE; c++) {
             state->board[r][c].color   = EMPTY; // clear every square before placing pieces
-            state->board[r][c].is_king = 0;
+            state->board[r][c].is_king = 0; //no kings on the board when game starts
         }
     }
 
-    for (r = 0; r < 3; r++) {
+    for (r = 0; r < 3; r++) { //this initializes the red pieces, so red always at the top
         for (c = 0; c < BOARD_SIZE; c++) {
             if ((r + c) % 2 == 1) { // pieces only go on dark squares where row+col is odd
                 state->board[r][c].color   = RED;
@@ -21,30 +21,35 @@ void init_board(GameState *state) {
         }
     }
 
-    for (r = 5; r < BOARD_SIZE; r++) {
+    for (r = 5; r < BOARD_SIZE; r++) { //this one initializes the black pieces
         for (c = 0; c < BOARD_SIZE; c++) {
             if ((r + c) % 2 == 1) {
                 state->board[r][c].color   = BLACK;
-                state->board[r][c].is_king = 0;
+                state->board[r][c].is_king = 0; //again no kings when the board initializes
             }
         }
     }
-
+    //all players start with 12 pieces (3 rows and 4 pieces per row)
     state->red_count     = 12; 
     state->black_count   = 12;
-    state->history_count = 0;
+    state->history_count = 0; //no moves have been played 
 }
 
-void render_board(const GameState *state) {
+//checks if the current player has a forced jump on the turn, and if so, those moves and pieces 
+//get shown, also bolds the pieces the player can move
+// r: red pawn R: red king b: black pawn B: black king
+//rows 0-7 are shown as rows 8-1
+void render_board(const GameState *state) { //prints the board after each move 
     int r, c;
 
     int must_jump = must_player_jump(state, state->current_player);
-
-    printf("\n      A   B   C   D   E   F   G   H\n");
+    //checks if a jump is forced
+    
+    printf("\n      A   B   C   D   E   F   G   H\n"); //pritning column labels
 
     for (r = 0; r < BOARD_SIZE; r++) {
         printf("    +---+---+---+---+---+---+---+---+\n");
-        printf("  %d |", 8 - r); 
+        printf("  %d |", 8 - r); // prints row number given by 8-(array index)
 
         for (c = 0; c < BOARD_SIZE; c++) {
             Piece p = state->board[r][c];
