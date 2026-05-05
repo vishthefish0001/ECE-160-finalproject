@@ -54,27 +54,27 @@ void render_board(const GameState *state) { //prints the board after each move
         for (c = 0; c < BOARD_SIZE; c++) {
             Piece p = state->board[r][c];
             if (p.color == EMPTY) {
-                printf("   |");
+                printf("   |"); //empty squares are blank spaces
             } 
-            else {
+            else { // should a piece be selected for the current player
                 int movable = 0;
                 if (p.color == state->current_player) {
                     if (must_jump) {
-                        if (can_piece_jump(state, r, c)) movable = 1;
+                        if (can_piece_jump(state, r, c)) movable = 1; //jump piecesare selected
                     } else {
-                        if (can_piece_move(state, r, c)) movable = 1;
+                        if (can_piece_move(state, r, c)) movable = 1; //movale pieces are selected
                     }
                 }
 
-                char piece_char;
+                char piece_char; //difference between kings and pawn for each color
                 if (p.color == RED) {
-                    piece_char = p.is_king ? 'R' : 'r';
+                    piece_char = p.is_king ? 'R' : 'r'; //for red
                 } else {
-                    piece_char = p.is_king ? 'B' : 'b';
+                    piece_char = p.is_king ? 'B' : 'b'; //for black
                 }
 
                 if (movable) {
-                    printf(" \033[1m%c\033[0m |", piece_char);
+                    printf(" \033[1m%c\033[0m |", piece_char); //searched this up, it turns on/off bolding in the terminal
                 } else {
                     printf(" %c |", piece_char);
                 }
@@ -82,6 +82,6 @@ void render_board(const GameState *state) { //prints the board after each move
         }
         printf("\n");
     }
-    printf("    +---+---+---+---+---+---+---+---+\n");
-    printf("\n  Red: %d pieces   Black: %d pieces\n\n", state->red_count, state->black_count);
+    printf("    +---+---+---+---+---+---+---+---+\n");//the last boundary at the bottom of the board
+    printf("\n  Red: %d pieces   Black: %d pieces\n\n", state->red_count, state->black_count); //piece count per player
 }
