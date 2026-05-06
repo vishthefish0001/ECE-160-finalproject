@@ -74,13 +74,15 @@ void render_board(const GameState *state) { //prints the board after each move
                 char piece_char; //difference between kings and pawn for each color
                 if (p.color == RED) {
                     piece_char = p.is_king ? 'R' : 'r'; //for red
-                } else {
+                } 
+                else {
                     piece_char = p.is_king ? 'B' : 'b'; //for black
                 }
 
                 if (movable) {
                     printf(" \033[1m%c\033[0m |", piece_char); //searched this up, it turns on/off bolding in the terminal
-                } else {
+                } 
+                else {
                     printf(" %c |", piece_char);
                 }
             }

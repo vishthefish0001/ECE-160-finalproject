@@ -29,8 +29,9 @@ static int read_destination(Move *m) {
     }
     flush_stdin();
 
-    if (dest_col >= 'a' && dest_col <= 'z') //lowercase to uppercase
+    if (dest_col >= 'a' && dest_col <= 'z'){ //lowercase to uppercase
         dest_col = dest_col - 'a' + 'A';
+    }
 
     m->to_col = dest_col - 'A'; //converting board cooridnates to array indices 
     m->to_row = 8 - dest_row;
