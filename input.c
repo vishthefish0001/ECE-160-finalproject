@@ -19,7 +19,7 @@ static int read_destination(Move *m) {
     char dest_col;
     int dest_row;
 
-    printf("Enter Destination, ex: C4");
+    printf("Enter Destination, ex: C4 ");
     if (scanf(" %c%d", &dest_col, &dest_row) !=2) {
         if(feof(stdin)){ //EOF means no more input so exit cleanly
              exit(1);
