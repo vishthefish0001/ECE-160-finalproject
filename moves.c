@@ -94,16 +94,24 @@ int can_piece_move(const GameState *state, int r, int c) {
 
     // Forward-left and forward-right
     if (r + dir >= 0 && r + dir < BOARD_SIZE) {
-        if (c - 1 >= 0 && state->board[r + dir][c - 1].color == EMPTY) return 1;
-        if (c + 1 < BOARD_SIZE && state->board[r + dir][c + 1].color == EMPTY) return 1;
+        if (c - 1 >= 0 && state->board[r + dir][c - 1].color == EMPTY){
+             return 1;
+        }
+        if (c + 1 < BOARD_SIZE && state->board[r + dir][c + 1].color == EMPTY){
+             return 1;
+        }
     }
 
     // Kings: also check backward diagonals 
     if (p.is_king) {
         int back = -dir;
         if (r + back >= 0 && r + back < BOARD_SIZE) {
-            if (c - 1 >= 0 && state->board[r + back][c - 1].color == EMPTY) return 1;
-            if (c + 1 < BOARD_SIZE && state->board[r + back][c + 1].color == EMPTY) return 1;
+            if (c - 1 >= 0 && state->board[r + back][c - 1].color == EMPTY){
+                 return 1;
+            }
+            if (c + 1 < BOARD_SIZE && state->board[r + back][c + 1].color == EMPTY){
+                 return 1;
+            }
         }
     }
 
